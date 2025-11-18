@@ -62,6 +62,8 @@ public:
     // destructor
     ~AVLTree();
 
+    void refreshSubtree(BSTNode *node);
+
     // Stream insertion operator. Prints tree contents
     friend std::ostream& operator<<(std::ostream& os, const AVLTree&);
 };

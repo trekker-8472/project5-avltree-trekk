@@ -508,3 +508,10 @@ void printSideways(std::ostream& os, const BSTNode* node, int depth) { //prints 
 
     printSideways(os, node->left, depth + 1); //print left subtree last
 }
+
+void AVLTree::refreshSubtree(BSTNode* node) {
+    if (!node) return;
+    refreshSubtree(node->left);
+    refreshSubtree(node->right);
+    node->updateHeight();
+}
