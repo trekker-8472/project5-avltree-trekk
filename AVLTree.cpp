@@ -77,6 +77,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             //heavy left
             if (ancestor->left &&ancestor->left->balanceFactor() < 0 ) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
+                ancestor->updateHeight();
                 newAncestor = rotateSetRight(ancestor);
             }
             else {//single rotate
@@ -86,6 +87,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
         else if (currBalance <= -2 && ancestor->right) {//double rotate
             if (ancestor->right && ancestor->right->balanceFactor() > 0 ) {
                 ancestor->right = rotateSetRight(ancestor->right);
+                ancestor->updateHeight();
                 newAncestor = rotateSetLeft(ancestor);
             }
             else {//single rotate
