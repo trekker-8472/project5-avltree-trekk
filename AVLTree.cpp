@@ -326,6 +326,7 @@ std::vector<std::string> AVLTree::keys() const {
 
 // Counts number key value pairs in tree and returns count
 size_t AVLTree::size() const {
+    return this->AVLTreeSize;
 }
 
 // Returns AVL tree height
