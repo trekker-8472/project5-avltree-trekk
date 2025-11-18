@@ -51,7 +51,7 @@ public:
     size_t getHeight() const;
 
     //helper to get subtree height
-    size_t getSubnodeHeight(BSTNode* node) const;
+    int getSubnodeHeight(BSTNode* node) const;
 
     // Copy constructor creates a deep copy of the other tree.
     AVLTree(const AVLTree& other);
@@ -97,5 +97,6 @@ public:
 
 BSTNode* rotateSetRight(BSTNode* pivotPoint);
 BSTNode* rotateSetLeft(BSTNode* pivotPoint);
+static void printSideways(std::ostream& os, const BSTNode* node, int depth);
 
 #endif // AVLTREE_H

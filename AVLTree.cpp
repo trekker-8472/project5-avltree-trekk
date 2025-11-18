@@ -8,7 +8,7 @@
 #include <string>
 #include <optional>
 #include <vector>
-#include<algorithm>
+#include <algorithm>
 
 using namespace std;
 
@@ -71,9 +71,9 @@ bool AVLTree::insert(const std::string &key, size_t value) {
 
         BSTNode* newAncestor = ancestor;
 
-        if (currBalance >= 2) {
+        if (currBalance >= 2 && ancestor->left) {
             //heavy left
-            if (ancestor->left->balanceFactor()>0) {//double rotate
+            if (ancestor->left->balanceFactor() < 0) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
                 newAncestor = rotateSetRight(ancestor);
             }
@@ -81,8 +81,8 @@ bool AVLTree::insert(const std::string &key, size_t value) {
                 newAncestor = rotateSetRight(ancestor);
             }
         }
-        else if (currBalance <= -2) {//double rotate
-            if (ancestor->right->balanceFactor()<0) {
+        else if (currBalance <= -2 && ancestor->right) {//double rotate
+            if (ancestor->right->balanceFactor() > 0) {
                 ancestor->right = rotateSetRight(ancestor->right);
                 newAncestor = rotateSetLeft(ancestor);
             }
@@ -102,9 +102,8 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             }
         break;
         }
-
-    return true;
     }
+    return true;
 }
 
 // Removes the key-value pair associated of key from tree; true if the key removed else false
@@ -169,11 +168,14 @@ bool AVLTree::remove(const std::string &key) {
         BSTNode* decendentParent = nullptr;
 
         decendentParent = currentNode;
-        size_t ltHeight = getSubnodeHeight(currentNode->left);
-        size_t rtHeight = getSubnodeHeight(currentNode->right);
+        int ltHeight = getSubnodeHeight(currentNode->left);
+        int rtHeight = getSubnodeHeight(currentNode->right);
 
         if (rtHeight < ltHeight) {//piking shorter branch
             decendent = currentNode->right;
+            if (!decendent) {
+                return false;
+            }
             while (decendent->left) {
                 ancestorStorage.push_back(decendentParent);
                 decendentParent = decendent;
@@ -228,7 +230,7 @@ bool AVLTree::remove(const std::string &key) {
 
         BSTNode* newAncestor = ancestor;
 
-        if (currBalance >= 2) {
+        if (currBalance >= 2 && ancestor->left) {//added guard like in insert
             //heavy left
             if (ancestor->left->balanceFactor()>0) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
@@ -238,7 +240,7 @@ bool AVLTree::remove(const std::string &key) {
                 newAncestor = rotateSetRight(ancestor);
             }
         }
-        else if (currBalance <= -2) {//double rotate
+        else if (currBalance <= -2 && ancestor->right) {//double rotate
             if (ancestor->right->balanceFactor()<0) {
                 ancestor->right = rotateSetRight(ancestor->right);
                 newAncestor = rotateSetLeft(ancestor);
@@ -257,11 +259,9 @@ bool AVLTree::remove(const std::string &key) {
             else {
                 ancestorParent->right = newAncestor;
             }
-        break;
         }
-
-    return true;
     }
+    return true;
 }
 
 // Checks whether key exists in tree.
@@ -339,9 +339,9 @@ size_t AVLTree::getHeight() const {
     }
 }
 
-size_t AVLTree::getSubnodeHeight(BSTNode* node) const {
+int AVLTree::getSubnodeHeight(BSTNode* node) const {
     if (node == nullptr) {
-        return -1;
+        return 0;
     }
     else {
         return node->height;
@@ -363,6 +363,7 @@ AVLTree::~AVLTree() {
 
 // Stream insertion operator. Prints tree contents
 std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
+    printSideways(os, tree.root, 0);
     return os;
 }
 
@@ -434,11 +435,16 @@ void BSTNode::updateHeight() {
 }
 
 // return all Trees values summed self inclusive
-size_t BSTNode::subtreeValueSum() const {
-    return 0;
-}
+// size_t BSTNode::subtreeValueSum() const {
+//     return 0;
+// }
 
 BSTNode* rotateSetRight(BSTNode *pivotPoint) { //if the set of nodes is heavy left they must be rotated right
+
+    if (!pivotPoint || !pivotPoint->left) {//added guard
+        return pivotPoint;
+    }
+
     BSTNode* newPoint = pivotPoint->left; //new node top point
     BSTNode* rtSubTree = newPoint->right; //define right subtree
 
@@ -450,6 +456,11 @@ BSTNode* rotateSetRight(BSTNode *pivotPoint) { //if the set of nodes is heavy le
 }
 
 BSTNode* rotateSetLeft(BSTNode *pivotPoint) {//mirror above
+
+    if (!pivotPoint || !pivotPoint->right) {//added guard
+        return pivotPoint;
+    }
+
     BSTNode* newPoint = pivotPoint->right; //new node top point
     BSTNode* ltSubTree = newPoint->left; //define right subtree
 
@@ -460,3 +471,13 @@ BSTNode* rotateSetLeft(BSTNode *pivotPoint) {//mirror above
     return newPoint;
 }
 
+void printSideways(std::ostream& os, const BSTNode* node, int depth) { //prints tree sideways using right-child-first traversal
+    if (!node) return; //base case: null node
+
+    printSideways(os, node->right, depth + 1); //print right subtree first
+
+    for (int i = 0; i < depth; ++i) os << "    "; //indent based on depth
+    os << "{" << node->key << ": " << node->value << "}" << std::endl; //print current node
+
+    printSideways(os, node->left, depth + 1); //print left subtree last
+}
