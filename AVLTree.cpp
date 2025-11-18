@@ -232,7 +232,7 @@ bool AVLTree::remove(const std::string &key) {
 
         if (currBalance >= 2 && ancestor->left) {//added guard like in insert
             //heavy left
-            if (ancestor->left->balanceFactor()>0) {//double rotate
+            if (ancestor->left &&ancestor->left->balanceFactor() >0 ) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
                 newAncestor = rotateSetRight(ancestor);
             }
@@ -241,7 +241,7 @@ bool AVLTree::remove(const std::string &key) {
             }
         }
         else if (currBalance <= -2 && ancestor->right) {//double rotate
-            if (ancestor->right->balanceFactor()<0) {
+            if (ancestor->right && ancestor->right->balanceFactor() <0 ) {
                 ancestor->right = rotateSetRight(ancestor->right);
                 newAncestor = rotateSetLeft(ancestor);
             }
@@ -405,12 +405,24 @@ int BSTNode::childCount() const {
 // returns balance factor (left minus right)
 int BSTNode::balanceFactor() const {
     int balanceFactor = 0;//start point
+    int ltHeight;//makiung left and right explicit
+    int rtHeight;
+
     if (left != nullptr) {//if not null add value of height from left
-        balanceFactor = balanceFactor + left->height;
+        ltHeight = left->height;
+    }
+    else {
+        ltHeight = -1;
     }
     if (right != nullptr) {//if not null subtract right value
-        balanceFactor = balanceFactor - right->height;
+        rtHeight = right->height;
     }
+    else {
+        rtHeight = -1;
+    }
+
+    balanceFactor = ltHeight - rtHeight;
+
     return balanceFactor;
 }
 
@@ -422,16 +434,20 @@ void BSTNode::updateHeight() {
         leftHeight = left->height;
     }
     else {
-        leftHeight = 0;
+        leftHeight = -1;
     }
     if (right != nullptr) {
         rightHeight = right->height;
     }
     else {
-        rightHeight = 0;
+        rightHeight = -1;
     }
-    height = max(leftHeight, rightHeight) + 1;
-
+    if (leftHeight > rightHeight) {
+        height = leftHeight + 1;
+    }
+    else {
+        height = rightHeight + 1;
+    }
 }
 
 // return all Trees values summed self inclusive
