@@ -71,9 +71,9 @@ bool AVLTree::insert(const std::string &key, size_t value) {
 
         BSTNode* newAncestor = ancestor;
 
-        if (currBalance >= 2 && ancestor->left) {
+        if (currBalance >= 2 && ancestor->left) {//added guard like in insert
             //heavy left
-            if (ancestor->left->balanceFactor() < 0) {//double rotate
+            if (ancestor->left &&ancestor->left->balanceFactor() < 0 ) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
                 newAncestor = rotateSetRight(ancestor);
             }
@@ -82,7 +82,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             }
         }
         else if (currBalance <= -2 && ancestor->right) {//double rotate
-            if (ancestor->right->balanceFactor() > 0) {
+            if (ancestor->right && ancestor->right->balanceFactor() > 0 ) {
                 ancestor->right = rotateSetRight(ancestor->right);
                 newAncestor = rotateSetLeft(ancestor);
             }
@@ -90,7 +90,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
                 newAncestor = rotateSetLeft(ancestor);
             }
         }
-        if (newAncestor != ancestor) {//check the regular not the parent
+        if (newAncestor != ancestor) {// check the real one not the parent one
             if (ancestorParent == nullptr) {
                 this->root = newAncestor;
             }
@@ -100,7 +100,6 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             else {
                 ancestorParent->right = newAncestor;
             }
-        break;
         }
     }
     return true;
@@ -232,7 +231,7 @@ bool AVLTree::remove(const std::string &key) {
 
         if (currBalance >= 2 && ancestor->left) {//added guard like in insert
             //heavy left
-            if (ancestor->left &&ancestor->left->balanceFactor() >0 ) {//double rotate
+            if (ancestor->left &&ancestor->left->balanceFactor() < 0 ) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
                 newAncestor = rotateSetRight(ancestor);
             }
@@ -241,7 +240,7 @@ bool AVLTree::remove(const std::string &key) {
             }
         }
         else if (currBalance <= -2 && ancestor->right) {//double rotate
-            if (ancestor->right && ancestor->right->balanceFactor() <0 ) {
+            if (ancestor->right && ancestor->right->balanceFactor() > 0 ) {
                 ancestor->right = rotateSetRight(ancestor->right);
                 newAncestor = rotateSetLeft(ancestor);
             }
