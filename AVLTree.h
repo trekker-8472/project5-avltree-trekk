@@ -50,6 +50,9 @@ public:
     // Returns AVL tree height
     size_t getHeight() const;
 
+    //helper to get subtree height
+    size_t getSubnodeHeight(BSTNode* node) const;
+
     // Copy constructor creates a deep copy of the other tree.
     AVLTree(const AVLTree& other);
 

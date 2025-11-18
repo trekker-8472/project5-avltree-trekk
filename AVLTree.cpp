@@ -290,6 +290,21 @@ size_t AVLTree::size() const {
 
 // Returns AVL tree height
 size_t AVLTree::getHeight() const {
+    if (this->root == nullptr) {
+        return 0;
+    }
+    else {
+        return 1 + this->root->height;
+    }
+}
+
+size_t AVLTree::getSubnodeHeight(BSTNode* node) const {
+    if (node == nullptr) {
+        return -1;
+    }
+    else {
+        return node->height;
+    }
 }
 
 // Copy constructor creates a deep copy of the other tree.
