@@ -96,6 +96,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             if (ancestorParent == nullptr) {
                 this->root = newAncestor;
                 this->root->updateHeight();
+                ancestor->updateHeight();
             }
             else if (ancestor == ancestorParent->left) {
                 ancestorParent->left = newAncestor;
