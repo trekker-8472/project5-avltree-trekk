@@ -92,22 +92,18 @@ bool AVLTree::insert(const std::string &key, size_t value) {
                 newAncestor = rotateSetLeft(ancestor);
             }
         }
-        if (newAncestor != ancestor) {// check the real one not the parent one
+        if (newAncestor != ancestor) {
             if (ancestorParent == nullptr) {
-                // rotation happened at the root
                 this->root = newAncestor;
-            }
-            else if (ancestor == ancestorParent->left) {
+            } else if (ancestor == ancestorParent->left) {
                 ancestorParent->left = newAncestor;
-            }
-            else {
+            } else {
                 ancestorParent->right = newAncestor;
             }
 
             if (ancestorParent) {
-                ancestorParent->updateHeight();
+                ancestorParent->updateHeight(); // parent height refresh
             }
-
         }
     }
 
