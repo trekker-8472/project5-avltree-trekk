@@ -16,7 +16,7 @@ using namespace std;
 class BSTNode;
 class AVLTree {
 public:
-    int AVLTreeSize;
+    size_t AVLTreeSize;
     BSTNode* root; //roots are special
 
     // All classes need a constructor this one is an empty tree

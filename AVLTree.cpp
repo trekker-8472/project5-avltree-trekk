@@ -14,6 +14,8 @@ using namespace std;
 
 // All classes need a constructor this one is an empty tree
 AVLTree::AVLTree() {
+    this->root = nullptr;     // critical: start with empty tree
+    this->AVLTreeSize = 0;    // size starts at 0
 }
 
 // Inserts a new key-value pair into tree No Duplicates if successful insert rebalance (if necessary) false on fail
@@ -99,6 +101,11 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             }
             else {
                 ancestorParent->right = newAncestor;
+            }
+
+            newAncestor->updateHeight();
+            if (ancestorParent) {
+                ancestorParent->updateHeight();
             }
         }
     }
