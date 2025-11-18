@@ -140,8 +140,26 @@ bool AVLTree::remove(const std::string &key) {
             parentNode->right = nullptr;
         }
     }
-    if (currentNode->childCount() == 1) {}
-    if (currentNode->childCount() == 2) {}
+    if (currentNode->childCount() == 1) {//if and only if one child
+        BSTNode* childNode = nullptr;
+        if (currentNode->left) {//account for the one child for later insertion
+            childNode = currentNode->left;
+        }
+        if (currentNode->right) {
+            childNode = currentNode->right;
+        }
+
+        if (!parentNode) {//still fairly simpl because you just move up and rebalance if need
+            root = childNode; // special case root node deletion
+        } else if (parentNode->left == currentNode) {
+            parentNode->left = childNode;
+        } else {
+            parentNode->right = childNode;
+        }
+    }
+    if (currentNode->childCount() == 2) {
+
+    }
 
 
     delete currentNode;
