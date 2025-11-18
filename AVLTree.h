@@ -1,54 +1,98 @@
 /**
+ *
  * AVLTree.h
+ * Robert Pohl
+ * Project 5
  */
 
 #ifndef AVLTREE_H
 #define AVLTREE_H
+#include <optional>
 #include <string>
+#include <vector>
+#include <ostream>
 
 using namespace std;
-
+class BSTNode;
 class AVLTree {
 public:
-    using KeyType = std::string;
-    using ValueType = size_t;
+    int AVLTreeSize;
+    BSTNode* root; //roots are special
 
-protected:
-    class AVLNode {
-    public:
-        KeyType key;
-        ValueType value;
-        size_t height;
+    // All classes need a constructor this one is an empty tree
+    AVLTree();
 
-        AVLNode* left;
-        AVLNode* right;
+    // Inserts a new key-value pair into tree No Duplicates if successful insert rebalance (if necessary) false on fail
+    bool insert(const std::string& key, size_t value);
 
-        // 0, 1 or 2
-        size_t numChildren() const;
-        // true or false
-        bool isLeaf() const;
-        // number of hops to deepest leaf node
-        size_t getHeight() const;
+    // Removes the key-value pair associated of key from tree; true if the key removed else false
+    bool remove(const std::string& key);
 
+    // Checks whether key exists in tree.
+    bool contains(const std::string& key) const;
 
-    };
+    // Retrieves the value of the key. and nullopt if empty
+    optional<size_t> get(const std::string& key) const;
 
-public:
+    // Accesses value associated key returning value or changing it as needed (don't worry if invalid)
+    size_t& operator[](const std::string& key);
 
+    // Finds all values associated with range giving vector of the key range unless empty, =0.
+    vector<size_t> findRange(const std::string& lowKey,
+                             const std::string& highKey) const;
 
+    // Returns vector with all keys in tree length equals tree size
+    std::vector<std::string> keys() const;
 
+    // Counts number key value pairs in tree and returns count
+    size_t size() const;
 
-    private:
-    AVLNode* root;
+    // Returns AVL tree height
+    size_t getHeight() const;
 
-    /* Helper methods for remove */
-    // this overloaded remove will do the recursion to remove the node
-    bool remove(AVLNode*& current, KeyType key);
-    // removeNode contains the logic for actually removing a node based on the numebr of children
-    bool removeNode(AVLNode*& current);
-    // You will implement this, but it is needed for removeNode()
-    void balanceNode(AVLNode*& node);
+    // Copy constructor creates a deep copy of the other tree.
+    AVLTree(const AVLTree& other);
 
+    // Assignment operator creates a deep copy of the other tree. releases memory
+    AVLTree& operator=(const AVLTree& other);
+
+    // destructor
+    ~AVLTree();
+
+    // Stream insertion operator. Prints tree contents
+    friend std::ostream& operator<<(std::ostream& os, const AVLTree&);
 };
 
-#endif //AVLTREE_H
+class BSTNode {
+public:
+    std::string key;   // key stored
+    size_t value;      // value associated
+    BSTNode* left;     // left child
+    BSTNode* right;    // right child
+    int height;        // node height (O(1))
+
+    // constructor, default
+    BSTNode(const std::string& k, size_t v);
+
+    // Checks if leaf
+    bool isLeaf() const;
+
+    // Returns Children number
+    int childCount() const;
+
+    // returns balance factor (left minus right)
+    int balanceFactor() const;
+
+    // Updates the height based on children after insert/remove operations.
+    void updateHeight();
+
+    // return all Trees values summed self inclusive
+    size_t subtreeValueSum() const;
+};
+
+//helper functions
+
+BSTNode* rotateSetRight(BSTNode* pivotPoint);
+BSTNode* rotateSetLeft(BSTNode* pivotPoint);
+
+#endif // AVLTREE_H
