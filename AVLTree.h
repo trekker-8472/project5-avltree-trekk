@@ -48,7 +48,7 @@ public:
     size_t size() const;
 
     // Returns AVL tree height
-    int getHeight() const;
+    size_t getHeight() const;
 
     //helper to get subtree height
     int getSubnodeHeight(BSTNode* node) const;
