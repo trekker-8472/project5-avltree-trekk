@@ -90,7 +90,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
                 newAncestor = rotateSetLeft(ancestor);
             }
         }
-        if (newAncestor != ancestorParent) {
+        if (newAncestor != ancestor) {//check the regular not the parent
             if (ancestorParent == nullptr) {
                 this->root = newAncestor;
             }
@@ -129,6 +129,13 @@ bool AVLTree::remove(const std::string &key) {
         }
     }
 
+    BSTNode* deletionNode = currentNode;
+
+
+    if (!currentNode) {
+        return false;
+    }
+
     if (currentNode->isLeaf()) {//leaf node case
         if (!parentNode) {
             root = nullptr; //special case root node deletion
@@ -162,17 +169,50 @@ bool AVLTree::remove(const std::string &key) {
         BSTNode* decendentParent = nullptr;
 
         decendentParent = currentNode;
-        int ltHeight = getHeight(currentNode->left);
-        int rtHeight = getHeight(currentNode->right);
-        ;
+        size_t ltHeight = getSubnodeHeight(currentNode->left);
+        size_t rtHeight = getSubnodeHeight(currentNode->right);
 
+        if (rtHeight < ltHeight) {//piking shorter branch
+            decendent = currentNode->right;
+            while (decendent->left) {
+                ancestorStorage.push_back(decendentParent);
+                decendentParent = decendent;
+                decendent = decendentParent->left;
+            }
+        }
+        else {
+            decendent = currentNode->left;
+            while (decendent->right) {
+                ancestorStorage.push_back(decendentParent);
+                decendentParent = decendent;
+                decendent = decendent->right;
+            }
+        }
+
+        currentNode->key = decendent->key;
+        currentNode->value = decendent->value;
+        BSTNode* childNode = nullptr;
+
+        if (decendent->left == nullptr) {
+            childNode = decendent->right;
+        }
+        if (decendent->right == nullptr) {
+            childNode = decendent->left;
+        }
+
+        if (decendentParent->left == decendent) {
+            decendentParent->left = childNode;
+        }
+        if (decendentParent->right == decendent) {
+            decendentParent->right = childNode;
+        }
+        deletionNode = decendent;
     }
 
-
-    delete currentNode;
+    delete deletionNode;
     this->AVLTreeSize--;
 
-    //time to balance check
+    //time to balance check and fix if necessary
 
     for (int i = ancestorStorage.size() - 1; i >= 0; i--) {
         BSTNode* ancestor = ancestorStorage[i];
@@ -207,7 +247,7 @@ bool AVLTree::remove(const std::string &key) {
                 newAncestor = rotateSetLeft(ancestor);
             }
         }
-        if (newAncestor != ancestorParent) {
+        if (newAncestor != ancestor) {// check the real one not the parent one
             if (ancestorParent == nullptr) {
                 this->root = newAncestor;
             }
