@@ -117,10 +117,7 @@ bool AVLTree::remove(const std::string &key) {
     while (currentNode) { //move through the tree
         if (currentNode->key == key) {//verify existence
             break;
-        }
-        if (currentNode == nullptr) {
-            return false;
-        }
+        }//removed redundant check
         ancestorStorage.push_back(currentNode);
         parentNode = currentNode;
 
@@ -132,7 +129,7 @@ bool AVLTree::remove(const std::string &key) {
         }
     }
 
-    if (currentNode->left == nullptr && currentNode->right == nullptr) {//leaf node case
+    if (currentNode->isLeaf()) {//leaf node case
         if (!parentNode) {
             root = nullptr; //special case root node deletion
         }
@@ -143,6 +140,8 @@ bool AVLTree::remove(const std::string &key) {
             parentNode->right = nullptr;
         }
     }
+    if (currentNode->childCount() == 1) {}
+    if (currentNode->childCount() == 2) {}
 
 
     delete currentNode;
