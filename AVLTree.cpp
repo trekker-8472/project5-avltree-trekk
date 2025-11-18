@@ -108,6 +108,10 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             if (ancestorParent) {
                 ancestorParent->updateHeight();
             }
+
+        }
+        if (this->root) {
+            this->root->updateHeight();
         }
     }
     return true;
