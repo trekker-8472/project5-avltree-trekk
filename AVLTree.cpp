@@ -158,6 +158,13 @@ bool AVLTree::remove(const std::string &key) {
         }
     }
     if (currentNode->childCount() == 2) {
+        BSTNode* decendent = nullptr;
+        BSTNode* decendentParent = nullptr;
+
+        decendentParent = currentNode;
+        int ltHeight = getHeight(currentNode->left);
+        int rtHeight = getHeight(currentNode->right);
+        ;
 
     }
 
