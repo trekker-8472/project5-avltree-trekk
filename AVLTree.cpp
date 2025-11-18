@@ -329,7 +329,7 @@ size_t AVLTree::size() const {
 }
 
 // Returns AVL tree height
-size_t AVLTree::getHeight() const {
+int AVLTree::getHeight() const {
     if (this->root == nullptr) {
         return -1;
     }
