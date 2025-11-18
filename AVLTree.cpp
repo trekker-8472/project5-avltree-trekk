@@ -332,16 +332,16 @@ size_t AVLTree::size() const {
 // Returns AVL tree height
 size_t AVLTree::getHeight() const {
     if (this->root == nullptr) {
-        return 0;
+        return -1;
     }
     else {
-        return 1 + this->root->height;
+        return this->root->height;
     }
 }
 
 int AVLTree::getSubnodeHeight(BSTNode* node) const {
     if (node == nullptr) {
-        return 0;
+        return -1;
     }
     else {
         return node->height;
@@ -377,8 +377,8 @@ BSTNode::BSTNode(const std::string& k, size_t v) {
     left = nullptr;
     right = nullptr;
 
-    // initialize height to 1 (leaf node height)
-    height = 1;
+    // initialize height to 0 (leaf node height)
+    height = 0;
 
 }
 
