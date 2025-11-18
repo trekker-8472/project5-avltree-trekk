@@ -17,7 +17,7 @@ bool insertResult;
 
 // Initial Inserts
 insertResult = tree.insert("Flank", 70);       // 'F'
-//insertResult = tree.insert("Flank", 70);   // false, no duplicates allowed
+insertResult = tree.insert("Flank", 70);   // false, no duplicates allowed
 insertResult = tree.insert("Loin", 76);         // 'L'
 insertResult = tree.insert("Round", 82);       // 'R' // Single rotate left (RR case)
 cout << endl << endl;

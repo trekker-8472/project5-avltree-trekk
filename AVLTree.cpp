@@ -93,8 +93,9 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             }
         }
         if (newAncestor != ancestor) {// check the real one not the parent one
-            if (this->root) {
-                refreshSubtree(this->root);   // still trying to get to the root of the problem
+            if (ancestorParent == nullptr) {
+                // rotation happened at the root
+                this->root = newAncestor;
             }
             else if (ancestor == ancestorParent->left) {
                 ancestorParent->left = newAncestor;
