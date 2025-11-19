@@ -45,13 +45,14 @@ insertResult = tree.insert("Brisket", 66); // false, duplicate
 insertResult = tree.insert("Short Loin", 83); // 'S'
 insertResult = tree.insert("Plate", 80);       // 'P'
 insertResult = tree.insert("Tenderloin", 84); // false, duplicate
+    insertResult = tree.insert("Aprium", 65);
 cout << endl << endl;
 cout << tree << endl;
 
 // size and getHeight
-// cout << "tree size: " << tree.size() << endl; // 10
-// cout << "tree height: " << tree.getHeight() << endl; // Likely 4
-// cout << endl;
+cout << "tree size: " << tree.size() << endl; // 10
+cout << "tree height: " << tree.getHeight() << endl; // Likely 4
+cout << endl;
 
 // contains
 bool containsResult;
@@ -80,29 +81,29 @@ cout << endl;
 // cout << endl << endl;
 
 // operator[]
-// tree["Brisket"] = 108; // Update Brisket's value
-// cout << tree << endl;
-// cout << endl;
+tree["Brisket"] = 108; // Update Brisket's value
+cout << tree << endl;
+cout << endl;
 
 // remove
-// bool removeResult;
-// removeResult= tree.remove("Brisket"); // Leaf
-// cout << endl << endl;
-// cout << tree << endl;
+bool removeResult;
+removeResult= tree.remove("Brisket"); // Leaf
+cout << endl << endl;
+cout << tree << endl;
 
-// removeResult = tree.remove("Chuck"); // One child
-// cout << endl << endl;
-// cout << tree << endl;
+removeResult = tree.remove("Chuck"); // One child
+cout << endl << endl;
+cout << tree << endl;
 
-// removeResult = tree.remove("Flank"); // Two children
-// cout << endl << endl;
-// cout << tree << endl;
+removeResult = tree.remove("Flank"); // Two children
+cout << endl << endl;
+cout << tree << endl;
 
-// removeResult = tree.remove("Rib");
-// removeResult = tree.remove("Round");
-// removeResult = tree.remove("Short Loin"); // double rotate right (RL case likely after removal)
-// cout << endl << endl;
-// cout << tree << endl;
+removeResult = tree.remove("Rib");
+removeResult = tree.remove("Round");
+removeResult = tree.remove("Short Loin"); // double rotate right (RL case likely after removal)
+cout << endl << endl;
+cout << tree << endl;
 
     return 0;
 }

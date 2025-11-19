@@ -488,7 +488,8 @@ void printSideways(std::ostream& os, const BSTNode* node, int depth) { //prints 
     printSideways(os, node->right, depth + 1); //print right subtree first
 
     for (int i = 0; i < depth; ++i) os << "    "; //indent based on depth
-    os << "{" << node->key << ": " << node->value << "}" << std::endl; //print current node
+    os << "{" << node->key << ": " << node->value << "} (H:" << node->height
+       << " BF:" << node->balanceFactor() << ")" << std::endl; //print current node
 
     printSideways(os, node->left, depth + 1); //print left subtree last
 }
