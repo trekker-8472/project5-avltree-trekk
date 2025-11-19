@@ -19,7 +19,6 @@ AVLTree::AVLTree() {
 }
 
 // Inserts a new key-value pair into tree No Duplicates if successful insert rebalance (if necessary) false on fail
-// Inserts a new key-value pair into tree No Duplicates if successful insert rebalance (if necessary) false on fail
 bool AVLTree::insert(const std::string &key, size_t value) {
 
     if (this->root == nullptr) {//special case root node
@@ -123,7 +122,6 @@ bool AVLTree::remove(const std::string &key) {
     BSTNode* parentNode = nullptr;
     BSTNode* nodeToDelete = nullptr; // Node holding the key to be deleted
 
-    // 1. Traverse to find the node and track ancestors
     while (currentNode) { //move through the tree
         if (currentNode->key == key) {//verify existence
             nodeToDelete = currentNode;
@@ -143,30 +141,28 @@ bool AVLTree::remove(const std::string &key) {
         return false;
     }
 
-    BSTNode* physicallyDeletedNode = nodeToDelete; // Node that will be deleted via 'delete'
-    BSTNode* replacementChild = nullptr;
+    BSTNode* deletionNode = nodeToDelete; // Node that will be deleted via 'delete'
+    BSTNode* newChild = nullptr;
 
-    // --- 2. Handle Deletion Cases ---
 
     if (nodeToDelete->childCount() < 2) {
         // Case 0 or 1 child
 
         if (nodeToDelete->left) {
-            replacementChild = nodeToDelete->left; //account for the one child for later insertion
+            newChild = nodeToDelete->left; //account for the one child for later insertion
         } else {
-            replacementChild = nodeToDelete->right;
+            newChild = nodeToDelete->right;
         }
 
         if (!parentNode) { // special case root node deletion
-            this->root = replacementChild;
+            this->root = newChild;
         } else if (parentNode->left == nodeToDelete) {
-            parentNode->left = replacementChild;
+            parentNode->left = newChild;
         } else {
-            parentNode->right = replacementChild;
+            parentNode->right = newChild;
         }
 
     } else {
-        // Case 2 children: Find Inorder Successor (Smallest in Right Subtree)
 
         BSTNode* successor = nodeToDelete->right;
         BSTNode* successorParent = nodeToDelete;
@@ -191,24 +187,23 @@ bool AVLTree::remove(const std::string &key) {
         nodeToDelete->value = successor->value;
 
         // The node to physically delete is the successor
-        physicallyDeletedNode = successor;
+        deletionNode = successor;
 
         // The successor's replacement is its own right child (since it has no left child)
-        replacementChild = successor->right;
+        newChild = successor->right;
 
         // Successor's parent takes the replacement child
         if (successorParent->left == successor) {
-            successorParent->left = replacementChild;
+            successorParent->left = newChild;
         } else {
             // This is the case where successorParent == nodeToDelete (successor was nodeToDelete->right)
-            successorParent->right = replacementChild;
+            successorParent->right = newChild;
         }
     }
 
-    delete physicallyDeletedNode;
+    delete deletionNode;
     this->AVLTreeSize--;
 
-    // --- 3. AVL Rebalancing ---
 
     // time to balance check and fix if necessary
 
@@ -318,6 +313,42 @@ size_t & AVLTree::operator[](const std::string &key) {
 
 // Finds all values associated with range giving vector of the key range unless empty, =0.
 vector<size_t> AVLTree::findRange(const std::string &lowKey, const std::string &highKey) const {
+
+    vector<size_t> rangeResult;
+
+    vector<const BSTNode*> rangeVector;
+    const BSTNode* current = this->root;
+
+    while (current != nullptr || !rangeVector.empty()) {
+
+        while (current != nullptr) {
+            if (current->key > lowKey) {
+                rangeVector.push_back(current); // Push
+                current = current->left;
+            } else {
+                break;
+            }
+        }
+
+        if (!rangeVector.empty()) {
+            current = rangeVector.back(); // Get top element
+            rangeVector.pop_back();       // Pop element
+        } else {
+            break;
+        }
+
+        if (current->key >= lowKey && current->key <= highKey) {
+            rangeResult.push_back(current->value);
+        }
+
+        if (current->key >= highKey) {
+            current = nullptr; // Stop traversal
+        } else {
+            current = current->right;
+        }
+    }
+
+    return rangeResult;
 }
 
 // Returns vector with all keys in tree length equals tree size
