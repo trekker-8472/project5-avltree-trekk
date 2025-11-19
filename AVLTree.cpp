@@ -388,6 +388,13 @@ AVLTree& AVLTree::operator=(const AVLTree& other) {
     return *this;
 }
 
+void AVLTree::findRangeRecursive(const BSTNode *node, const string &lowKey, string &highKey,
+    vector<size_t> &rangeResult) const {
+}
+
+void AVLTree::keysRecursive(const BSTNode *node, std::vector<std::string> &keyVector) const {
+}
+
 // destructor
 AVLTree::~AVLTree() {
 }
@@ -523,11 +530,4 @@ void printSideways(std::ostream& os, const BSTNode* node, int depth) { //prints 
        << " BF:" << node->balanceFactor() << ")" << std::endl; //print current node
 
     printSideways(os, node->left, depth + 1); //print left subtree last
-}
-
-void AVLTree::refreshSubtree(BSTNode* node) {
-    if (!node) return;
-    refreshSubtree(node->left);
-    refreshSubtree(node->right);
-    node->updateHeight();
 }

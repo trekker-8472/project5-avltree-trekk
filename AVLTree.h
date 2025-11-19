@@ -59,10 +59,16 @@ public:
     // Assignment operator creates a deep copy of the other tree. releases memory
     AVLTree& operator=(const AVLTree& other);
 
+    // For findRange
+    void findRangeRecursive(const BSTNode* node, const string& lowKey, string& highKey, vector<size_t>&
+        rangeResult) const;
+
+    void keysRecursive(const BSTNode* node, std::vector<std::string>& keyVector) const; // For keys
+
     // destructor
     ~AVLTree();
 
-    void refreshSubtree(BSTNode *node);
+    //void refreshSubtree(BSTNode *node);
 
     // Stream insertion operator. Prints tree contents
     friend std::ostream& operator<<(std::ostream& os, const AVLTree&);
@@ -92,7 +98,7 @@ public:
     void updateHeight();
 
     // return all Trees values summed self inclusive
-    size_t subtreeValueSum() const;
+//    size_t subtreeValueSum() const;
 };
 
 //helper functions
@@ -100,9 +106,6 @@ public:
 BSTNode* rotateSetRight(BSTNode* pivotPoint);
 BSTNode* rotateSetLeft(BSTNode* pivotPoint);
 static void printSideways(std::ostream& os, const BSTNode* node, int depth);
-// For findRange
-void findRangeRecursive(const BSTNode* node, const string& lowKey, string& highKey, vector<size_t>& rangeResult) const;
 
-void keysRecursive(const BSTNode* node, std::vector<std::string>& keyVector) const; // For keys
 
 #endif // AVLTREE_H
