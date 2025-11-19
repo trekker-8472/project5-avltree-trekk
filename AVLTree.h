@@ -60,13 +60,15 @@ public:
     AVLTree& operator=(const AVLTree& other);
 
     // For findRange
-    void findRangeRecursive(const BSTNode* node, const string& lowKey, string& highKey, vector<size_t>&
+    void findRangeRecursive(const BSTNode* node, const string& lowKey, const string& highKey, vector<size_t>&
         rangeResult) const;
 
     void keysRecursive(const BSTNode* node, std::vector<std::string>& keyVector) const; // For keys
 
     // destructor
     ~AVLTree();
+
+    void deleteNodesRecursive(BSTNode* node);//why the heck not everything else needs a little help and the sub helper functions are getting better
 
     //void refreshSubtree(BSTNode *node);
 
