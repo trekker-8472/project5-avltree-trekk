@@ -19,6 +19,7 @@ AVLTree::AVLTree() {
 }
 
 // Inserts a new key-value pair into tree No Duplicates if successful insert rebalance (if necessary) false on fail
+// Inserts a new key-value pair into tree No Duplicates if successful insert rebalance (if necessary) false on fail
 bool AVLTree::insert(const std::string &key, size_t value) {
 
     if (this->root == nullptr) {//special case root node
@@ -77,7 +78,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             //heavy left
             if (ancestor->left &&ancestor->left->balanceFactor() < 0 ) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
-                ancestor->updateHeight();
+                ancestor->updateHeight(); // Corrected: intermediate height update
                 newAncestor = rotateSetRight(ancestor);
             }
             else {//single rotate
@@ -87,7 +88,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
         else if (currBalance <= -2 && ancestor->right) {//double rotate
             if (ancestor->right && ancestor->right->balanceFactor() > 0 ) {
                 ancestor->right = rotateSetRight(ancestor->right);
-                ancestor->updateHeight();
+                ancestor->updateHeight(); // Corrected: intermediate height update
                 newAncestor = rotateSetLeft(ancestor);
             }
             else {//single rotate
@@ -106,7 +107,7 @@ bool AVLTree::insert(const std::string &key, size_t value) {
             if (ancestorParent) {
                 ancestorParent->updateHeight(); // parent height refresh
             }
-            break;
+            break; // Corrected: Break is conditional and only runs after a fix.
         }
     }
 
@@ -119,119 +120,107 @@ bool AVLTree::remove(const std::string &key) {
     vector<BSTNode*> ancestorStorage;
     BSTNode* currentNode = this->root;
     BSTNode* parentNode = nullptr;
+    BSTNode* nodeToDelete = nullptr; // Node holding the key to be deleted
 
+    // 1. Traverse to find the node and track ancestors
     while (currentNode) { //move through the tree
         if (currentNode->key == key) {//verify existence
+            nodeToDelete = currentNode;
             break;
-        }//removed redundant check
+        }
         ancestorStorage.push_back(currentNode);
         parentNode = currentNode;
 
         if (currentNode->key > key) {
             currentNode = currentNode->left;
-            }
-        else if (currentNode->key < key) {
+        } else {
             currentNode = currentNode->right;
         }
     }
 
-    BSTNode* deletionNode = currentNode;
-
-
-    if (!currentNode) {
+    if (!nodeToDelete) { // Key not found
         return false;
     }
 
-    if (currentNode->isLeaf()) {//leaf node case
-        if (!parentNode) {
-            root = nullptr; //special case root node deletion
-        }
-        if (parentNode->left == currentNode) {
-            parentNode->left = nullptr;
-        }
-        if (parentNode->right == currentNode) {
-            parentNode->right = nullptr;
-        }
-    }
-    if (currentNode->childCount() == 1) {//if and only if one child
-        BSTNode* childNode = nullptr;
-        if (currentNode->left) {//account for the one child for later insertion
-            childNode = currentNode->left;
-        }
-        if (currentNode->right) {
-            childNode = currentNode->right;
-        }
+    BSTNode* physicallyDeletedNode = nodeToDelete; // Node that will be deleted via 'delete'
+    BSTNode* replacementChild = nullptr;
 
-        if (!parentNode) {//still fairly simpl because you just move up and rebalance if need
-            root = childNode; // special case root node deletion
-        } else if (parentNode->left == currentNode) {
-            parentNode->left = childNode;
+    // --- 2. Handle Deletion Cases ---
+
+    if (nodeToDelete->childCount() < 2) {
+        // Case 0 or 1 child
+
+        if (nodeToDelete->left) {
+            replacementChild = nodeToDelete->left; //account for the one child for later insertion
         } else {
-            parentNode->right = childNode;
+            replacementChild = nodeToDelete->right;
+        }
+
+        if (!parentNode) { // special case root node deletion
+            this->root = replacementChild;
+        } else if (parentNode->left == nodeToDelete) {
+            parentNode->left = replacementChild;
+        } else {
+            parentNode->right = replacementChild;
+        }
+
+    } else {
+        // Case 2 children: Find Inorder Successor (Smallest in Right Subtree)
+
+        BSTNode* successor = nodeToDelete->right;
+        BSTNode* successorParent = nodeToDelete;
+
+        // Traverse left to find the smallest node (Successor)
+        if (successor) {
+            if (successor->left) {
+                 // Ancestor for successor's parent
+                ancestorStorage.push_back(nodeToDelete);
+            }
+
+            while (successor->left) {
+                // Track path down to the successor for rebalancing
+                ancestorStorage.push_back(successor);
+                successorParent = successor;
+                successor = successor->left;
+            }
+        }
+
+        // Swap data: Copy Successor's data to the node being conceptually deleted
+        nodeToDelete->key = successor->key;
+        nodeToDelete->value = successor->value;
+
+        // The node to physically delete is the successor
+        physicallyDeletedNode = successor;
+
+        // The successor's replacement is its own right child (since it has no left child)
+        replacementChild = successor->right;
+
+        // Successor's parent takes the replacement child
+        if (successorParent->left == successor) {
+            successorParent->left = replacementChild;
+        } else {
+            // This is the case where successorParent == nodeToDelete (successor was nodeToDelete->right)
+            successorParent->right = replacementChild;
         }
     }
-    if (currentNode->childCount() == 2) {
-        BSTNode* decendent = nullptr;
-        BSTNode* decendentParent = nullptr;
 
-        decendentParent = currentNode;
-        int ltHeight = getSubnodeHeight(currentNode->left);
-        int rtHeight = getSubnodeHeight(currentNode->right);
-
-        if (rtHeight < ltHeight) {//piking shorter branch
-            decendent = currentNode->right;
-            if (!decendent) {
-                return false;
-            }
-            while (decendent->left) {
-                ancestorStorage.push_back(decendentParent);
-                decendentParent = decendent;
-                decendent = decendentParent->left;
-            }
-        }
-        else {
-            decendent = currentNode->left;
-            while (decendent->right) {
-                ancestorStorage.push_back(decendentParent);
-                decendentParent = decendent;
-                decendent = decendent->right;
-            }
-        }
-
-        currentNode->key = decendent->key;
-        currentNode->value = decendent->value;
-        BSTNode* childNode = nullptr;
-
-        if (decendent->left == nullptr) {
-            childNode = decendent->right;
-        }
-        if (decendent->right == nullptr) {
-            childNode = decendent->left;
-        }
-
-        if (decendentParent->left == decendent) {
-            decendentParent->left = childNode;
-        }
-        if (decendentParent->right == decendent) {
-            decendentParent->right = childNode;
-        }
-        deletionNode = decendent;
-    }
-
-    delete deletionNode;
+    delete physicallyDeletedNode;
     this->AVLTreeSize--;
 
-    //time to balance check and fix if necessary
+    // --- 3. AVL Rebalancing ---
+
+    // time to balance check and fix if necessary
 
     for (int i = ancestorStorage.size() - 1; i >= 0; i--) {
         BSTNode* ancestor = ancestorStorage[i];
         BSTNode* ancestorParent = nullptr;
+
         if (i > 0) { // setup for rotation if and only if necessary
             ancestorParent = ancestorStorage[i-1];
-        }
-        else {
+        } else {
             ancestorParent = nullptr;
         }
+
         ancestor->updateHeight();//height and balance
         int currBalance = ancestor->balanceFactor();
 
@@ -239,38 +228,41 @@ bool AVLTree::remove(const std::string &key) {
 
         if (currBalance >= 2 && ancestor->left) {//added guard like in insert
             //heavy left
-            if (ancestor->left &&ancestor->left->balanceFactor() < 0 ) {//double rotate
+            if (ancestor->left && ancestor->left->balanceFactor() < 0) {//double rotate
                 ancestor->left = rotateSetLeft(ancestor->left);
+                ancestor->updateHeight(); // Corrected: Intermediate height update
+                newAncestor = rotateSetRight(ancestor);
+            } else {//single rotate
                 newAncestor = rotateSetRight(ancestor);
             }
-            else {//single rotate
-                newAncestor = rotateSetRight(ancestor);
-            }
-        }
-        else if (currBalance <= -2 && ancestor->right) {//double rotate
-            if (ancestor->right && ancestor->right->balanceFactor() > 0 ) {
+        } else if (currBalance <= -2 && ancestor->right) {//double rotate
+            if (ancestor->right && ancestor->right->balanceFactor() > 0) {
                 ancestor->right = rotateSetRight(ancestor->right);
+                ancestor->updateHeight(); // Corrected: Intermediate height update
                 newAncestor = rotateSetLeft(ancestor);
-            }
-            else {//single rotate
+            } else {//single rotate
                 newAncestor = rotateSetLeft(ancestor);
             }
         }
+
         if (newAncestor != ancestor) {// check the real one not the parent one
             if (ancestorParent == nullptr) {
                 this->root = newAncestor;
-            }
-            else if (ancestor == ancestorParent->left) {
+            } else if (ancestor == ancestorParent->left) {
                 ancestorParent->left = newAncestor;
-            }
-            else {
+            } else {
                 ancestorParent->right = newAncestor;
             }
+
+            if (ancestorParent) {
+                ancestorParent->updateHeight(); // parent height refresh
+            }
+            // NOTE: No break; here for AVL removal
         }
     }
+
     return true;
 }
-
 // Checks whether key exists in tree.
 bool AVLTree::contains(const std::string& key) const {
     BSTNode* currentNode = this->root;//start at beginning
