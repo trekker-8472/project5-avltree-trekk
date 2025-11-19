@@ -448,12 +448,7 @@ void BSTNode::updateHeight() {
     else {
         rightHeight = -1;
     }
-    if (leftHeight > rightHeight) {
-        height = leftHeight + 1;
-    }
-    else {
-        height = rightHeight + 1;
-    }
+    this->height = 1 + std::max(leftHeight, rightHeight);
 }
 
 // return all Trees values summed self inclusive
