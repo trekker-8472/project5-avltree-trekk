@@ -8,6 +8,7 @@ instead for you to get an idea of how to test the tree
 #include <string>
 #include <ranges>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 
