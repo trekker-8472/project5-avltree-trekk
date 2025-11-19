@@ -59,6 +59,8 @@ public:
     // Assignment operator creates a deep copy of the other tree. releases memory
     AVLTree& operator=(const AVLTree& other);
 
+    BSTNode* copyTreeRecursive(const BSTNode* otherNode);
+
     // For findRange
     void findRangeRecursive(const BSTNode* node, const string& lowKey, const string& highKey, vector<size_t>&
         rangeResult) const;

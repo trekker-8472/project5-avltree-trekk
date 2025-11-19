@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 using namespace std;
 
@@ -314,39 +315,10 @@ size_t & AVLTree::operator[](const std::string &key) {
 // Finds all values associated with range giving vector of the key range unless empty, =0.
 vector<size_t> AVLTree::findRange(const std::string &lowKey, const std::string &highKey) const {
 
-    vector<size_t> rangeResult;
+    vector<size_t> rangeResult; // Vector to store values in range
 
-    vector<const BSTNode*> rangeVector;
-    const BSTNode* current = this->root;
-
-    while (current != nullptr || !rangeVector.empty()) {
-
-        while (current != nullptr) {
-            if (current->key > lowKey) {
-                rangeVector.push_back(current); // Push
-                current = current->left;
-            } else {
-                break;
-            }
-        }
-
-        if (!rangeVector.empty()) {
-            current = rangeVector.back(); // Get top element
-            rangeVector.pop_back();       // Pop element
-        } else {
-            break;
-        }
-
-        if (current->key >= lowKey && current->key <= highKey) {
-            rangeResult.push_back(current->value);
-        }
-
-        if (current->key >= highKey) {
-            current = nullptr; // Stop traversal
-        } else {
-            current = current->right;
-        }
-    }
+    // call recursive helper to perform search and fill rangeResult
+    findRangeRecursive(this->root, lowKey, highKey, rangeResult);
 
     return rangeResult;
 }
@@ -385,18 +357,81 @@ AVLTree::AVLTree(const AVLTree& other) {
 
 // Assignment operator creates a deep copy of the other tree. releases memory
 AVLTree& AVLTree::operator=(const AVLTree& other) {
+    if (this != &other) { // check for self-assignment protection
+        // clean up existing resources
+        this->~AVLTree();
+
+        //copy constructor
+        this->root = nullptr;
+        this->AVLTreeSize = 0;
+
+        // Helper function (re-used copy logic)
+        std::function<BSTNode*(const BSTNode*)> copyTree =
+            [&](const BSTNode* otherNode) -> BSTNode* {
+                if (otherNode == nullptr) {
+                    return nullptr;
+                }
+                BSTNode* newNode = new BSTNode(otherNode->key, otherNode->value);
+                this->AVLTreeSize++;
+                newNode->left = copyTree(otherNode->left);
+                newNode->right = copyTree(otherNode->right);
+                newNode->updateHeight();
+                return newNode;
+        };
+
+        this->root = copyTree(other.root);
+    }
     return *this;
 }
 
-void AVLTree::findRangeRecursive(const BSTNode *node, const string &lowKey, string &highKey,
-    vector<size_t> &rangeResult) const {
+BSTNode * AVLTree::copyTreeRecursive(const BSTNode *otherNode) {
+}
+
+void AVLTree::findRangeRecursive(const BSTNode *node, const string &lowKey, const string &highKey,
+                                 vector<size_t> &rangeResult) const {
+
+        if (node == nullptr) {
+            return; // base case
+        }
+
+        // check low bound and traverse left
+        if (node->key > lowKey) {
+            findRangeRecursive(node->left, lowKey, highKey, rangeResult);
+        }
+
+        // check range and push value
+        if (node->key >= lowKey && node->key <= highKey) {
+            rangeResult.push_back(node->value);
+        }
+
+        // check high bound and traverse right
+        if (node->key < highKey) {
+            findRangeRecursive(node->right, lowKey, highKey, rangeResult);
+        }
 }
 
 void AVLTree::keysRecursive(const BSTNode *node, std::vector<std::string> &keyVector) const {
+
 }
 
 // destructor
 AVLTree::~AVLTree() {
+    // Helper function for post-order traversal to safely delete nodes
+    deleteNodesRecursive(this->root);
+
+    this->root = nullptr; // reset members
+    this->AVLTreeSize = 0;
+}
+
+void AVLTree::deleteNodesRecursive(BSTNode *node) {
+
+    if (node == nullptr) {
+        return; // base case
+    }
+
+    deleteNodesRecursive(node->left); // delete left subtree
+    deleteNodesRecursive(node->right); // delete right subtree
+    delete node; // delete current node
 }
 
 // Stream insertion operator. Prints tree contents
