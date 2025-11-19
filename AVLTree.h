@@ -100,5 +100,9 @@ public:
 BSTNode* rotateSetRight(BSTNode* pivotPoint);
 BSTNode* rotateSetLeft(BSTNode* pivotPoint);
 static void printSideways(std::ostream& os, const BSTNode* node, int depth);
+// For findRange
+void findRangeRecursive(const BSTNode* node, const string& lowKey, string& highKey, vector<size_t>& rangeResult) const;
+
+void keysRecursive(const BSTNode* node, std::vector<std::string>& keyVector) const; // For keys
 
 #endif // AVLTREE_H

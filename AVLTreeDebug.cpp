@@ -72,13 +72,13 @@ getResult = tree.get("Shoulder"); // getResult has no value
 cout << "Shoulder: " << getResult.has_value() << endl; // print 0
 cout << endl;
 
-// findRange
-// vector<size_t> rangeTest = tree.findRange("Chuck", "Rib");
-// Expected keys in range: Chuck, Flank, Loin, Plate, Rib, Round, Sirloin, Short Loin, Tenderloin
-// for (auto val: rangeTest) {
-//     cout << val << " ";
-// }
-// cout << endl << endl;
+//findRange
+vector<size_t> rangeTest = tree.findRange("Chuck", "Rib");
+//Expected keys in range: Chuck, Flank, Loin, Plate, Rib, Round, Sirloin, Short Loin, Tenderloin
+for (auto val: rangeTest) {
+     cout << val << " ";
+}
+cout << endl << endl;
 
 // operator[]
 tree["Brisket"] = 108; // Update Brisket's value
